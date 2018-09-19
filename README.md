@@ -1,4 +1,4 @@
-<h1>This scprit implements a static resource server and a proxy for cross site requests.</h1>
+<h1>This script implements a static resource server and a proxy for cross site requests.</h1>
 <h2>For static resource server:</h2>
 <p>File structure must be the following style</p>
 <p>root/<br>
