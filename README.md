@@ -2,9 +2,9 @@
 <h2>For static resource server:</h2>
 <p>File structure must be the following style</p>
 <p>root/</p>
-  <p style="margin-left: 2rem">|_ index.html</p>
-  <p style="margin-left: 2rem">|_/static/</p>
-       <p style="margin-left: 4rem">|_your static file, ex. js, css, etc</p>
+<p>....|_ index.html</p>
+<p>....|_/static/</p>
+<p>........|_your static file, ex. js, css, etc</p>
 	   
 <h2>For proxy:</h2>
 <p>request must contains the header named<br/>
