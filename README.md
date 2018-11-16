@@ -1,4 +1,4 @@
-<h1>This script implements a static resource server and a proxy for cross site requests.</h1>
+<h1>This nodejs script implements a static resource server and a proxy for cross site requests.</h1>
 <h2>For static resource server:</h2>
 <p>File structure must be the following style</p>
 <p>root/<br>
@@ -10,3 +10,9 @@
 <p>request must contains the header named
 1. forwardtohost. (the host you want to forward to)
 2. forwardtohost. (the port for request host)</p>
+
+<h1>Installing:</h1>
+<p>Just install nodejs, then you can use this proxy</p>
+
+<h1>Starting:</h1>
+<p>Execute # node nodeproxy.js</p>
