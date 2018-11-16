@@ -7,9 +7,9 @@
 <p>........|_your static file, ex. js, css, etc</p>
 	   
 <h2>For proxy:</h2>
-<p>request must contains the header named<br/>
+<p>request should contains the header named<br/>
 1. forwardtohost. (the host you want to forward to)<br/>
-2. forwardtoport. (the port for request host)</p>
+2. forwardtoport. (the port for request host, optional, default 80)</p>
 
 <h1>Installing:</h1>
 <p>Just install nodejs, then you can use this proxy</p>
