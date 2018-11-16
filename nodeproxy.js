@@ -17,6 +17,10 @@ var ctntype = {
   "js": "text/javascript",
   "json": "application/json",
   "pdf": "application/pdf",
+  "tar": "application/tar",
+  "woff2": "application/font-woff",
+  "woff": "application/font-woff",
+  "ttf": "application/ttf",
   "png": "image/png",
   "svg": "image/svg+xml",
   "swf": "application/x-shockwave-flash",
@@ -36,7 +40,7 @@ http.createServer(function (request, response) {
 	var last = pathattr && pathattr[pathattr.length-1];
 // 	log.debug("Request for " + pathname + " received.");
 // 	log.debug("headers: "+ JSON.stringify(request.headers));
-	if (pathname.match(/^\/static/) != null || pathname.match(/^\/index.html/) != null){
+	if (pathname.match(/^\/static/) != null || pathname.match(/^\/.*\.html/) != null){
 		//log.debug("match");
 		var filetype = last && last.split('.')[(last.split('.')).length-1];
 		var contentType = null
@@ -91,35 +95,55 @@ log.info('Server running');
 
 function forward(request, response, opts, data){
 	var content = '';
-	try{
-		var req = http.request(opts, function(res) {
+	try{	
+		var request_timer = null, req = null;
+		request_timer = setTimeout(function() {
+			req.abort();
+			log.error('Request Timeout.');
+		}, 5000); 
+		req = http.request(opts, function(res) {
+			clearTimeout(request_timer);
 // 			log.debug("=======resheaders=====",JSON.stringify(res.headers));
 // 			log.debug("=======resstatusCode=====",res.statusCode);
+			var response_timer = setTimeout(function() {
+				res.destroy();
+				log.error('Response Timeout.');
+			}, 20000);
 			res.on('data',function(body){
 // 				log.debug("=======body=====",body);
 				content+=body;
 				}).on("end", function () {
+//					log.debug("=======end=====");
 					try{
+						clearTimeout(response_timer);
 						response.writeHead(200, res.headers);
 						response.write(content, function(err) {response.end();});
+						response.end();
 					}catch(err){
+						clearTimeout(response_timer);
 						response.writeHead(500, {'Content-Type': 'text/html'});
 						response.write("server error: "+err);
 						response.end();
 					};
 				}).on('error', function(e) {
+					clearTimeout(response_timer);
 					printCmnInfo(request.url,request.headers,opts,e,data);
 					response.writeHead(500, {'Content-Type': 'text/html'});
 					response.write("server error: "+e);
 					response.end();
 				});
 		}).on('error', function(e) {
+			clearTimeout(request_timer);
 			printCmnInfo(request.url,request.headers,opts,e,data);
 			response.writeHead(500, {'Content-Type': 'text/html'});
 			response.write("server error: "+e);
 			response.end();
 		});
 	}catch(e){
+		clearTimeout(request_timer);
+		if(response_timer){
+			clearTimeout(response_timer);
+		};
 		printCmnInfo(request.url,request.headers,opts,e,data);
 		response.writeHead(500, {'Content-Type': 'text/html'});
 		response.write("server error: "+e);
