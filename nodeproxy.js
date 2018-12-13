@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
+var zlib = require('zlib');
 
 var log4js = require("log4js");
 var log4js_config = require("./log4js.json");
@@ -94,7 +95,7 @@ http.createServer(function (request, response) {
 log.info('Server running');
 
 function forward(request, response, opts, data){
-	var content = '';
+	var chunks =[];
 	try{	
 		var request_timer = null, req = null;
 		request_timer = setTimeout(function() {
@@ -111,14 +112,26 @@ function forward(request, response, opts, data){
 			}, 20000);
 			res.on('data',function(body){
 // 				log.debug("=======body=====",body);
-				content+=body;
+				chunks.push(body)
 				}).on("end", function () {
 //					log.debug("=======end=====");
 					try{
+						var buffer = Buffer.concat(chunks);
+						if (res.headers['content-encoding'] == 'gzip') {
+							zlib.gunzip(buffer, function(err, decoded) {
+//								log.debug("=======decoded=====",decoded.toString());
+								delete res.headers['content-encoding'];
+								clearTimeout(response_timer);
+								response.writeHead(200, res.headers);
+								response.write(decoded.toString(), function(err) {response.end();});
+								response.end();
+							})
+						}else {
 						clearTimeout(response_timer);
 						response.writeHead(200, res.headers);
-						response.write(content, function(err) {response.end();});
+						response.write(buffer, function(err) {response.end();});
 						response.end();
+						}
 					}catch(err){
 						clearTimeout(response_timer);
 						response.writeHead(500, {'Content-Type': 'text/html'});
