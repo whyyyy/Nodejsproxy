@@ -117,21 +117,10 @@ function forward(request, response, opts, data){
 //					log.debug("=======end=====");
 					try{
 						var buffer = Buffer.concat(chunks);
-						if (res.headers['content-encoding'] == 'gzip') {
-							zlib.gunzip(buffer, function(err, decoded) {
-//								log.debug("=======decoded=====",decoded.toString());
-								delete res.headers['content-encoding'];
-								clearTimeout(response_timer);
-								response.writeHead(200, res.headers);
-								response.write(decoded.toString(), function(err) {response.end();});
-								response.end();
-							})
-						}else {
 						clearTimeout(response_timer);
 						response.writeHead(200, res.headers);
 						response.write(buffer, function(err) {response.end();});
 						response.end();
-						}
 					}catch(err){
 						clearTimeout(response_timer);
 						response.writeHead(500, {'Content-Type': 'text/html'});
