@@ -2,36 +2,12 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 var zlib = require('zlib');
+var mime = require("mime");
 
 var log4js = require("log4js");
 var log4js_config = require("./log4js.json");
 log4js.configure(log4js_config);
 var log = log4js.getLogger('monitor');
-
-var ctntype = {
-  "css": "text/css",
-  "gif": "image/gif",
-  "html": "text/html",
-  "ico": "image/x-icon",
-  "jpeg": "image/jpeg",
-  "jpg": "image/jpeg",
-  "js": "text/javascript",
-  "json": "application/json",
-  "pdf": "application/pdf",
-  "tar": "application/tar",
-  "woff2": "application/font-woff",
-  "woff": "application/font-woff",
-  "ttf": "application/ttf",
-  "png": "image/png",
-  "svg": "image/svg+xml",
-  "swf": "application/x-shockwave-flash",
-  "tiff": "image/tiff",
-  "txt": "text/plain",
-  "wav": "audio/x-wav",
-  "wma": "audio/x-ms-wma",
-  "wmv": "video/x-ms-wmv",
-  "xml": "text/xml"
-};
 
 http.createServer(function (request, response) {
 	var parseObj = url.parse(request.url, true);
@@ -46,7 +22,7 @@ http.createServer(function (request, response) {
 		var filetype = last && last.split('.')[(last.split('.')).length-1];
 		var contentType = null
 		if (filetype){
-			contentType = {'Content-Type': eval("ctntype."+filetype)};
+			contentType = {'Content-Type': mime.getType(filetype)};
 		}
 		fs.readFile(pathname.substr(1), "binary", function (err, data) {
 		if (err) {
