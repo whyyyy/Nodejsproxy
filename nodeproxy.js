@@ -92,10 +92,12 @@ function forward(request, response, opts, data){
 				}).on("end", function () {
 //					log.debug("=======end=====");
 					try{
-						var buffer = Buffer.concat(chunks);
+						let buffer = Buffer.concat(chunks);
 						clearTimeout(response_timer);
 						response.writeHead(200, res.headers);
-						response.write(buffer, function(err) {response.end();});
+						if (response.finished != true) {
+						    response.write(buffer, function(err) {response.end();});
+						}
 						response.end();
 					}catch(err){
 						clearTimeout(response_timer);
